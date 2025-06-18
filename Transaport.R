@@ -165,7 +165,6 @@ print(vif_values)
 
 cat("\n=== DESCRIPTIVE STATISTICS BY VEHICLE TYPE ===\n")
 
-# Group statistics by vehicle type
 vehicle_stats <- data %>%
   group_by(vehicle_type) %>%
   summarise(
