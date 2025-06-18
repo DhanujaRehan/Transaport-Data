@@ -154,7 +154,6 @@ print(summary(model))
 par(mfrow = c(2, 2))
 plot(model)
 
-# Check for multicollinearity
 vif_values <- vif(model)
 cat("Variance Inflation Factors (VIF):\n")
 print(vif_values)
