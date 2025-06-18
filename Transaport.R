@@ -159,8 +159,6 @@ vif_values <- vif(model)
 cat("Variance Inflation Factors (VIF):\n")
 print(vif_values)
 
-# ==========================================
-
 cat("\n=== DESCRIPTIVE STATISTICS BY VEHICLE TYPE ===\n")
 
 vehicle_stats <- data %>%
