@@ -52,7 +52,7 @@ for(var in numeric_vars) {
        main = paste("Distribution of", var),
        xlab = var,
        ylab = "Frequency",
-       col = "lightblue",
+       col = "darkblue",
        probability = TRUE)
   
   # Add normal curve overlay
@@ -61,26 +61,18 @@ for(var in numeric_vars) {
   lines(x, y, col = "red", lwd = 2)
 }
 
-# ==========================================
-# TASK 4: Hypothesis Testing - Price vs Vehicle Type
-# ==========================================
 
 cat("\n=== TASK 4: PRICE vs VEHICLE TYPE ANALYSIS ===\n")
 
-# Null Hypothesis: There is no significant difference in price between vehicle types
-# Alternative Hypothesis: There is a significant difference in price between vehicle types
 
-# ANOVA test
 anova_result <- aov(price ~ vehicle_type, data = data)
 print(summary(anova_result))
 
-# Post-hoc test if ANOVA is significant
 if(summary(anova_result)[[1]][["Pr(>F)"]][1] < 0.05) {
   cat("ANOVA is significant. Performing post-hoc tests:\n")
   print(TukeyHSD(anova_result))
 }
 
-# Box plot visualization
 ggplot(data, aes(x = vehicle_type, y = price, fill = vehicle_type)) +
   geom_boxplot() +
   theme_minimal() +
