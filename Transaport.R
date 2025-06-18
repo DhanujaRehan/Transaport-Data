@@ -161,7 +161,6 @@ print(vif_values)
 
 # ==========================================
 # ADDITIONAL ANALYSIS FOR RECOMMENDATIONS
-# ==========================================
 
 cat("\n=== DESCRIPTIVE STATISTICS BY VEHICLE TYPE ===\n")
 
