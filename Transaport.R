@@ -199,7 +199,6 @@ write.csv(correlation_matrix, "correlation_matrix.csv")
 write.csv(vehicle_stats, "vehicle_type_analysis.csv", row.names = FALSE)
 write.csv(brand_stats, "brand_analysis.csv", row.names = FALSE)
 
-# Save model summary
 capture.output(summary(model), file = "regression_model_summary.txt")
 
 cat("\n=== ANALYSIS COMPLETE ===\n")
