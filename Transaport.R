@@ -43,7 +43,6 @@ for(var in numeric_vars) {
        col = "darkblue",
        probability = TRUE)
   
-  # Add normal curve overlay
   x <- seq(min(data[[var]], na.rm = TRUE), max(data[[var]], na.rm = TRUE), length = 100)
   y <- dnorm(x, mean = mean(data[[var]], na.rm = TRUE), sd = sd(data[[var]], na.rm = TRUE))
   lines(x, y, col = "red", lwd = 2)
@@ -126,11 +125,6 @@ print(cor_test_weight)
 cor_test_age <- cor.test(data$price, data$age, method = "pearson")
 print(cor_test_age)
 
-
-
-# ==========================================
-# NORMALITY TESTS (Required for Task 5)
-# ==========================================
 
 cat("\n=== NORMALITY TESTS ===\n")
 
