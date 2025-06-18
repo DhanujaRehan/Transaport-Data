@@ -179,7 +179,6 @@ vehicle_stats <- data %>%
 
 print(vehicle_stats)
 
-# Brand analysis
 brand_stats <- data %>%
   group_by(brand) %>%
   summarise(
