@@ -16,10 +16,9 @@ print(head(data))
 
 cat("\n=== TASK 3: CENTRAL TENDENCY ANALYSIS ===\n")
 
-# Variables to analyze
 numeric_vars <- c("engine_size", "horsepower", "curb_weight", "price")
 
-# Calculate central tendency measures
+
 central_tendency <- data.frame(
   Variable = numeric_vars,
   Mean = sapply(numeric_vars, function(x) mean(data[[x]], na.rm = TRUE)),
@@ -33,7 +32,7 @@ central_tendency <- data.frame(
 
 print(central_tendency)
 
-# Create bell curves (normal distribution plots)
+
 par(mfrow = c(2, 2))
 
 for(var in numeric_vars) {
