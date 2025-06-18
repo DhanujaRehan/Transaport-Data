@@ -160,7 +160,6 @@ cat("Variance Inflation Factors (VIF):\n")
 print(vif_values)
 
 # ==========================================
-# ADDITIONAL ANALYSIS FOR RECOMMENDATIONS
 
 cat("\n=== DESCRIPTIVE STATISTICS BY VEHICLE TYPE ===\n")
 
