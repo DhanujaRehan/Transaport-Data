@@ -1,15 +1,11 @@
-# Business Analytics Assignment - Auto Data Analysis
-# CSE5014 - Transport System Analysis for Sri Lanka
 
-# Load required libraries
 library(ggplot2)
 library(dplyr)
 library(corrplot)
 library(car)
 library(nortest)
 
-# Load the dataset
-# For Windows (adjust your username)
+
 data <- read.csv("C:/Users/Rehan/Downloads/auto_Info.csv")
 
 
@@ -81,34 +77,41 @@ ggplot(data, aes(x = vehicle_type, y = price, fill = vehicle_type)) +
        y = "Price (USD)") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-# ==========================================
-# TASK 5: Correlation and Regression Analysis
-# ==========================================
+
 
 cat("\n=== TASK 5: CORRELATION AND REGRESSION ANALYSIS ===\n")
 
-# Select numeric variables for correlation
 numeric_data <- data[, c("engine_size", "horsepower", "curb_weight", "age", "price")]
 
-# Correlation matrix
+shapiro_price <- shapiro.test(data$price)
+print(shapiro_price)
+
+ad_price <- ad.test(data$price)
+print(ad_price)
+
+qqnorm(data$price, main = "Q-Q Plot for Price")
+qqline(data$price, col = "red")
+
+numeric_data <- data[, c("engine_size", "horsepower", "curb_weight", "age", "price")]
 correlation_matrix <- cor(numeric_data, use = "complete.obs")
 print("Correlation Matrix:")
 print(correlation_matrix)
 
-# Correlation plot
+
+correlation_matrix <- cor(numeric_data, use = "complete.obs")
+print("Correlation Matrix:")
+print(correlation_matrix)
+
 corrplot(correlation_matrix, method = "circle", type = "upper")
 
-# Individual correlation tests with price
 predictors <- c("engine_size", "horsepower", "curb_weight", "age")
 
 for(predictor in predictors) {
   cat(paste("\n--- Correlation Test: Price vs", predictor, "---\n"))
   
-  # Pearson correlation test
   cor_test <- cor.test(data$price, data[[predictor]], method = "pearson")
   print(cor_test)
   
-  # Scatter plot with regression line
   p <- ggplot(data, aes_string(x = predictor, y = "price")) +
     geom_point(alpha = 0.6) +
     geom_smooth(method = "lm", se = TRUE, color = "red") +
@@ -118,6 +121,20 @@ for(predictor in predictors) {
          y = "Price (USD)")
   print(p)
 }
+
+cor_test_engine <- cor.test(data$price, data$engine_size, method = "pearson")
+print(cor_test_engine)
+
+cor_test_hp <- cor.test(data$price, data$horsepower, method = "pearson")
+print(cor_test_hp)
+
+cor_test_weight <- cor.test(data$price, data$curb_weight, method = "pearson")
+print(cor_test_weight)
+
+cor_test_age <- cor.test(data$price, data$age, method = "pearson")
+print(cor_test_age)
+
+
 
 # ==========================================
 # NORMALITY TESTS (Required for Task 5)
@@ -144,7 +161,6 @@ qqline(data$price, col = "red")
 
 cat("\n=== MULTIPLE REGRESSION ANALYSIS ===\n")
 
-# Multiple regression model
 model <- lm(price ~ engine_size + horsepower + curb_weight + age, data = data)
 print(summary(model))
 
