@@ -1,0 +1,217 @@
+# Business Analytics Assignment - Auto Data Analysis
+# CSE5014 - Transport System Analysis for Sri Lanka
+
+# Load required libraries
+library(ggplot2)
+library(dplyr)
+library(corrplot)
+library(car)
+library(nortest)
+
+# Load the dataset
+# For Windows (adjust your username)
+data <- read.csv("C:/Users/Rehan/Downloads/auto_Info.csv")
+
+
+
+
+# Display basic information about the dataset
+cat("Dataset Overview:\n")
+print(str(data))
+print(summary(data))
+print(head(data))
+
+# ==========================================
+# TASK 3: Central Tendency Analysis
+# ==========================================
+
+cat("\n=== TASK 3: CENTRAL TENDENCY ANALYSIS ===\n")
+
+# Variables to analyze
+numeric_vars <- c("engine_size", "horsepower", "curb_weight", "price")
+
+# Calculate central tendency measures
+central_tendency <- data.frame(
+  Variable = numeric_vars,
+  Mean = sapply(numeric_vars, function(x) mean(data[[x]], na.rm = TRUE)),
+  Median = sapply(numeric_vars, function(x) median(data[[x]], na.rm = TRUE)),
+  Mode = sapply(numeric_vars, function(x) {
+    ux <- unique(data[[x]])
+    ux[which.max(tabulate(match(data[[x]], ux)))]
+  }),
+  SD = sapply(numeric_vars, function(x) sd(data[[x]], na.rm = TRUE))
+)
+
+print(central_tendency)
+
+# Create bell curves (normal distribution plots)
+par(mfrow = c(2, 2))
+
+for(var in numeric_vars) {
+  hist(data[[var]], 
+       main = paste("Distribution of", var),
+       xlab = var,
+       ylab = "Frequency",
+       col = "lightblue",
+       probability = TRUE)
+  
+  # Add normal curve overlay
+  x <- seq(min(data[[var]], na.rm = TRUE), max(data[[var]], na.rm = TRUE), length = 100)
+  y <- dnorm(x, mean = mean(data[[var]], na.rm = TRUE), sd = sd(data[[var]], na.rm = TRUE))
+  lines(x, y, col = "red", lwd = 2)
+}
+
+# ==========================================
+# TASK 4: Hypothesis Testing - Price vs Vehicle Type
+# ==========================================
+
+cat("\n=== TASK 4: PRICE vs VEHICLE TYPE ANALYSIS ===\n")
+
+# Null Hypothesis: There is no significant difference in price between vehicle types
+# Alternative Hypothesis: There is a significant difference in price between vehicle types
+
+# ANOVA test
+anova_result <- aov(price ~ vehicle_type, data = data)
+print(summary(anova_result))
+
+# Post-hoc test if ANOVA is significant
+if(summary(anova_result)[[1]][["Pr(>F)"]][1] < 0.05) {
+  cat("ANOVA is significant. Performing post-hoc tests:\n")
+  print(TukeyHSD(anova_result))
+}
+
+# Box plot visualization
+ggplot(data, aes(x = vehicle_type, y = price, fill = vehicle_type)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Price Distribution by Vehicle Type",
+       x = "Vehicle Type",
+       y = "Price (USD)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# ==========================================
+# TASK 5: Correlation and Regression Analysis
+# ==========================================
+
+cat("\n=== TASK 5: CORRELATION AND REGRESSION ANALYSIS ===\n")
+
+# Select numeric variables for correlation
+numeric_data <- data[, c("engine_size", "horsepower", "curb_weight", "age", "price")]
+
+# Correlation matrix
+correlation_matrix <- cor(numeric_data, use = "complete.obs")
+print("Correlation Matrix:")
+print(correlation_matrix)
+
+# Correlation plot
+corrplot(correlation_matrix, method = "circle", type = "upper")
+
+# Individual correlation tests with price
+predictors <- c("engine_size", "horsepower", "curb_weight", "age")
+
+for(predictor in predictors) {
+  cat(paste("\n--- Correlation Test: Price vs", predictor, "---\n"))
+  
+  # Pearson correlation test
+  cor_test <- cor.test(data$price, data[[predictor]], method = "pearson")
+  print(cor_test)
+  
+  # Scatter plot with regression line
+  p <- ggplot(data, aes_string(x = predictor, y = "price")) +
+    geom_point(alpha = 0.6) +
+    geom_smooth(method = "lm", se = TRUE, color = "red") +
+    theme_minimal() +
+    labs(title = paste("Price vs", predictor),
+         x = predictor,
+         y = "Price (USD)")
+  print(p)
+}
+
+# ==========================================
+# NORMALITY TESTS (Required for Task 5)
+# ==========================================
+
+cat("\n=== NORMALITY TESTS ===\n")
+
+# Test normality of price (dependent variable)
+cat("Normality test for Price:\n")
+shapiro_price <- shapiro.test(data$price)
+print(shapiro_price)
+
+# Anderson-Darling test (alternative)
+ad_price <- ad.test(data$price)
+print(ad_price)
+
+# Q-Q plot for price
+qqnorm(data$price, main = "Q-Q Plot for Price")
+qqline(data$price, col = "red")
+
+# ==========================================
+# MULTIPLE REGRESSION ANALYSIS
+# ==========================================
+
+cat("\n=== MULTIPLE REGRESSION ANALYSIS ===\n")
+
+# Multiple regression model
+model <- lm(price ~ engine_size + horsepower + curb_weight + age, data = data)
+print(summary(model))
+
+# Model diagnostics
+par(mfrow = c(2, 2))
+plot(model)
+
+# Check for multicollinearity
+vif_values <- vif(model)
+cat("Variance Inflation Factors (VIF):\n")
+print(vif_values)
+
+# ==========================================
+# ADDITIONAL ANALYSIS FOR RECOMMENDATIONS
+# ==========================================
+
+cat("\n=== DESCRIPTIVE STATISTICS BY VEHICLE TYPE ===\n")
+
+# Group statistics by vehicle type
+vehicle_stats <- data %>%
+  group_by(vehicle_type) %>%
+  summarise(
+    Count = n(),
+    Avg_Price = mean(price, na.rm = TRUE),
+    Avg_Fuel_Efficiency = mean(fuel_efficiency, na.rm = TRUE),
+    Avg_Engine_Size = mean(engine_size, na.rm = TRUE),
+    Avg_Weight = mean(curb_weight, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+print(vehicle_stats)
+
+# Brand analysis
+brand_stats <- data %>%
+  group_by(brand) %>%
+  summarise(
+    Count = n(),
+    Avg_Price = mean(price, na.rm = TRUE),
+    Avg_Fuel_Efficiency = mean(fuel_efficiency, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(Avg_Fuel_Efficiency))
+
+print("Brand Analysis (sorted by fuel efficiency):")
+print(brand_stats)
+
+# ==========================================
+# EXPORT RESULTS
+# ==========================================
+
+# Save results to files
+write.csv(central_tendency, "central_tendency_results.csv", row.names = FALSE)
+write.csv(correlation_matrix, "correlation_matrix.csv")
+write.csv(vehicle_stats, "vehicle_type_analysis.csv", row.names = FALSE)
+write.csv(brand_stats, "brand_analysis.csv", row.names = FALSE)
+
+# Save model summary
+capture.output(summary(model), file = "regression_model_summary.txt")
+
+cat("\n=== ANALYSIS COMPLETE ===\n")
+cat("Results saved to CSV files in working directory\n")
+cat("Remember to interpret these results in the context of Sri Lankan transport needs\n")
