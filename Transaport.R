@@ -193,7 +193,6 @@ brand_stats <- data %>%
 print("Brand Analysis (sorted by fuel efficiency):")
 print(brand_stats)
 
-# Save results to files
 write.csv(central_tendency, "central_tendency_results.csv", row.names = FALSE)
 write.csv(correlation_matrix, "correlation_matrix.csv")
 write.csv(vehicle_stats, "vehicle_type_analysis.csv", row.names = FALSE)
