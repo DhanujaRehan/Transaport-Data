@@ -8,18 +8,11 @@ library(nortest)
 
 data <- read.csv("C:/Users/Rehan/Downloads/auto_Info.csv")
 
-
-
-
-# Display basic information about the dataset
 cat("Dataset Overview:\n")
 print(str(data))
 print(summary(data))
 print(head(data))
 
-# ==========================================
-# TASK 3: Central Tendency Analysis
-# ==========================================
 
 cat("\n=== TASK 3: CENTRAL TENDENCY ANALYSIS ===\n")
 
